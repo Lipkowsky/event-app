@@ -9,6 +9,8 @@ const isProtectedRoute = createRouteMatcher([
   // '/api/uploadthing',
 ]);
 
+
+
 export default clerkMiddleware((auth, req) => {
   if (isProtectedRoute(req)) auth().protect();
 });
