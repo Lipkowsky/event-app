@@ -1,3 +1,4 @@
+import CategoryFilter from "@/components/shared/CategoryFilter";
 import Collection from "@/components/shared/Collection";
 import Search from "@/components/shared/Search";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,7 @@ export default async function Home({searchParams} : SearchParamProps) {
     limit: 6,
   });
 
-  console.log(events)
+ 
 
   return (
     <>
@@ -45,9 +46,9 @@ export default async function Home({searchParams} : SearchParamProps) {
       <h2 className="h2-bold">Trust by <br /> Thousands of Events</h2>
       <div className="flex w-full flex-col gap-5 md:flex-row">
           <Search />
-          {/* <CategoryFilter /> */}
+          <CategoryFilter />
         </div>
-        <Collection data={events?.data} collectionType="All_Events" emptyTitle="No events founds" emptyStateSubtext="Come back later" limit={6} page={1} totalPages={2} />
+        <Collection data={events?.data} collectionType="All_Events" emptyTitle="No events founds" emptyStateSubtext="Come back later" limit={6} page={page} totalPages={events?.totalPages} />
       </section>
     </>
   );
