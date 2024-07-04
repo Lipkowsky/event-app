@@ -19,13 +19,6 @@ const CategoryFilter = () => {
   const searchParams = useSearchParams();
   const [prevCategory, setPrevCategory] = useState<string | null>(null);
 
-  useEffect(() => {
-    const currentCategory = searchParams.get("category");
-
-    if (currentCategory) {
-      setPrevCategory(currentCategory);
-    }
-  }, [searchParams]);
 
   useEffect(() => {
     const getCategories = async () => {
