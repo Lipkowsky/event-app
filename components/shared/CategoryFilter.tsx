@@ -21,6 +21,7 @@ const CategoryFilter = () => {
 
   useEffect(() => {
     const currentCategory = searchParams.get("category");
+
     if (currentCategory) {
       setPrevCategory(currentCategory);
     }
