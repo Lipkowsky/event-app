@@ -1,15 +1,30 @@
-import Search from '@/components/shared/Search'
-import { getOrdersByEvent } from '@/lib/actions/order.actions'
-import { formatDateTime, formatPrice } from '@/lib/utils'
-import { SearchParamProps } from '@/types'
-import { IOrderItem } from '@/lib/database/models/order.model'
+import Search from "@/components/shared/Search";
+import { getOrdersByEvent } from "@/lib/actions/order.actions";
+import { formatDateTime, formatPrice } from "@/lib/utils";
+import { SearchParamProps } from "@/types";
+import { IOrderItem } from "@/lib/database/models/order.model";
+import { getEventById } from "@/lib/actions/event.actions";
+import { auth } from "@clerk/nextjs/server";
 
 const Orders = async ({ searchParams }: SearchParamProps) => {
-  const eventId = (searchParams?.eventId as string) || ''
-  const searchText = (searchParams?.query as string) || ''
+  const { sessionClaims } = auth();
+  const userId = sessionClaims?.userId as string;
+  console.log(userId);
+  const eventId = (searchParams?.eventId as string) || "";
+  const searchText = (searchParams?.query as string) || "";
 
-  const orders = await getOrdersByEvent({ eventId, searchString: searchText })
-
+  const orders = await getOrdersByEvent({ eventId, searchString: searchText });
+  const { organizer } = await getEventById(eventId);
+  const isUserOrganizer = userId === organizer._id;
+  if (!isUserOrganizer) {
+    return (
+      <section className="wrapper mt-8">
+        <h3 className="text-center text-red-500">
+          You do not have permission to view these orders.
+        </h3>
+      </section>
+    );
+  }
   return (
     <>
       <section className=" bg-primary-50 bg-dotted-pattern bg-cover bg-center py-5 md:py-10">
@@ -25,7 +40,9 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
           <thead>
             <tr className="p-medium-14 border-b text-grey-500">
               <th className="min-w-[250px] py-3 text-left">Order ID</th>
-              <th className="min-w-[200px] flex-1 py-3 pr-4 text-left">Event Title</th>
+              <th className="min-w-[200px] flex-1 py-3 pr-4 text-left">
+                Event Title
+              </th>
               <th className="min-w-[150px] py-3 text-left">Buyer</th>
               <th className="min-w-[100px] py-3 text-left">Created</th>
               <th className="min-w-[100px] py-3 text-right">Amount</th>
@@ -45,9 +62,14 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
                     <tr
                       key={row._id}
                       className="p-regular-14 lg:p-regular-16 border-b "
-                      style={{ boxSizing: 'border-box' }}>
-                      <td className="min-w-[250px] py-4 text-primary-500">{row._id}</td>
-                      <td className="min-w-[200px] flex-1 py-4 pr-4">{row.eventTitle}</td>
+                      style={{ boxSizing: "border-box" }}
+                    >
+                      <td className="min-w-[250px] py-4 text-primary-500">
+                        {row._id}
+                      </td>
+                      <td className="min-w-[200px] flex-1 py-4 pr-4">
+                        {row.eventTitle}
+                      </td>
                       <td className="min-w-[150px] py-4">{row.buyer}</td>
                       <td className="min-w-[100px] py-4">
                         {formatDateTime(row.createdAt).dateTime}
@@ -63,7 +85,7 @@ const Orders = async ({ searchParams }: SearchParamProps) => {
         </table>
       </section>
     </>
-  )
-}
+  );
+};
 
-export default Orders
+export default Orders;
