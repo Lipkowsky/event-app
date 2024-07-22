@@ -9,13 +9,14 @@ import { auth } from "@clerk/nextjs/server";
 const Orders = async ({ searchParams }: SearchParamProps) => {
   const { sessionClaims } = auth();
   const userId = sessionClaims?.userId as string;
-  console.log(userId);
+
   const eventId = (searchParams?.eventId as string) || "";
   const searchText = (searchParams?.query as string) || "";
 
   const orders = await getOrdersByEvent({ eventId, searchString: searchText });
   const { organizer } = await getEventById(eventId);
   const isUserOrganizer = userId === organizer._id;
+
   if (!isUserOrganizer) {
     return (
       <section className="wrapper mt-8">
